@@ -19,13 +19,19 @@ public class Main {
         System.out.println("Median: " + getMedian(numbers));
         System.out.println("Average: " + getAverage(numbers));
     }
-
+    private static int toTwosComplement(int num) {
+        if (num >= 0) {
+            return num;
+        } else {
+            return (int) (Math.pow(2, 16) - Math.abs(num));
+        }
+    }
     private static void convertToBinary(int[] numbers, String[] numbersAsString){
         for (int i = 0; i < numbersAsString.length; i++) {
             try {
-                numbers[i] = Integer.parseInt(numbersAsString[i]);
+                numbers[i] = toTwosComplement(Integer.parseInt(numbersAsString[i]));
             } catch (NumberFormatException e) {
-                System.err.println("Number format exception: " + numbersAsString[i]);
+                System.err.println("Помилка у введених даних: " + numbersAsString[i]);
                 numbers[i] = 0;
             }
         }
