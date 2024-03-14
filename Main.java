@@ -10,9 +10,21 @@ public class Main {
         while ((line = br.readLine()) != null) {
             inputBuilder.append(line).append("\n");
         }
-        String input = inputBuilder.toString().trim(); // Отримання рядка даних без пробілів на початку і в кінці
+        String input = inputBuilder.toString().trim();
 
         String[] numbersAsString = input.split("[\\s]+");
         int[] numbers = new int[numbersAsString.length];
+        convertToBinary(numbers, numbersAsString);
+    }
+
+    private static void convertToBinary(int[] numbers, String[] numbersAsString){
+        for (int i = 0; i < numbersAsString.length; i++) {
+            try {
+                numbers[i] = Integer.parseInt(numbersAsString[i]);
+            } catch (NumberFormatException e) {
+                System.err.println("Number format exception: " + numbersAsString[i]);
+                numbers[i] = 0;
+            }
+        }
     }
 }
