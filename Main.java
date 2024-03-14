@@ -16,6 +16,8 @@ public class Main {
         int[] numbers = new int[numbersAsString.length];
         convertToBinary(numbers, numbersAsString);
         bubbleSort(numbers);
+        System.out.println("Median: " + getMedian(numbers));
+        System.out.println("Average: " + getAverage(numbers));
     }
 
     private static void convertToBinary(int[] numbers, String[] numbersAsString){
@@ -41,5 +43,22 @@ public class Main {
                 }
             }
         }
+    }
+
+
+    private static double getMedian(int[] numbers){
+        if (numbers.length % 2 == 0) {
+            return (numbers[numbers.length / 2 - 1] + numbers[numbers.length / 2]) / 2.0;
+        } else {
+            return numbers[numbers.length / 2];
+        }
+    }
+
+    private static double getAverage(int[] numbers){
+        double sum = 0;
+        for (int num : numbers) {
+            sum += num;
+        }
+        return sum / numbers.length;
     }
 }
