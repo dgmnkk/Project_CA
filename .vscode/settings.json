@@ -1,5 +1,6 @@
 {
     "masmtasm.ASM.mode": "workspace",
+    "masmtasm.ASM.emulator": "dosbox-x",
     "masmtasm.ASM.actions": {
         "TASM": {
             "baseBundle": "<built-in>/TASM.jsdos",
@@ -9,7 +10,7 @@
             "run": [
                 "TASM ${file}",
                 "TLINK ${filename}",
-                ">${filename}<test.in"
+                ">V2TEST ${filename}"
             ],
             "debug": [
                 "TASM /zi ${file}",

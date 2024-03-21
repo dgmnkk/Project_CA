@@ -17,7 +17,7 @@ main:
     int 21h
 
 read_next:
-      mov ah, 3Fh
+    mov ah, 3Fh
     mov bx, 0h 
     mov cx, 1  
     mov dx, offset oneChar  
@@ -41,7 +41,6 @@ saveNumber:
     ret
 
 
-
 print_numbers:
     mov cx, numbersCount              
 
@@ -52,10 +51,6 @@ print_loop:
     int 21h               
     loop print_loop        
 
-    ret
-
-parseNumbers:
-    ; розділення рядка на окремі числа та збереження їх у масив
     ret
 
 sort:
