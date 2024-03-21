@@ -4,6 +4,7 @@
 .data
 oneChar db ?
 numbersCount dw 0             
+numbersArray dw 100 dup (0)   ; Масив для збереження чисел
 
 .code
 main:
@@ -23,8 +24,7 @@ read_next:
     mov dx, offset oneChar  
     int 21h 
 
-    ; do something with [oneChar]
-    cmp oneChar, ' '    
+    cmp oneChar, 20h    
     je saveNumber        
     cmp oneChar, 0Dh     
     je saveNumber        
@@ -36,21 +36,27 @@ read_next:
     ret
 
 saveNumber:
-    push ax
-    inc numbersCount    
+    mov [numbersArray + si], ax  ; Зберігаємо число у масиві
+    add si, 2                    ; Збільшуємо індекс на 2, оскільки кожне число займає 2 байти (dw)
+    inc numbersCount             ; Збільшуємо лічильник чисел
     ret
-
 
 print_numbers:
     mov cx, numbersCount              
+    mov si, offset numbersArray              
 
 print_loop:
-    pop ax                
-    mov dl, al             
-    mov ah, 02h           
-    int 21h               
+    mov ax, [si]                 ; Завантажуємо число з масиву
+    call print_number            ; Виводимо число
+    add si, 2                    ; Збільшуємо індекс на 2, оскільки кожне число займає 2 байти (dw)
     loop print_loop        
 
+    ret
+
+print_number:
+    mov dx, ax                   ; Завантажуємо число для виводу
+    mov ah, 09h                  ; Виводимо число
+    int 21h
     ret
 
 sort:
@@ -64,4 +70,4 @@ calculateAverage:
 calculateMedian:
     ; обчислення медіани
     ret
-end main
+end main 
