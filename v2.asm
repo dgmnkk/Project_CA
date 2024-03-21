@@ -18,7 +18,7 @@ main:
     int 21h
 
 read_next:
-    mov ah, 3Fh
+    mov ah, 03fh
     mov bx, 0h 
     mov cx, 1  
     mov dx, offset oneChar  
@@ -60,7 +60,22 @@ print_number:
     ret
 
 sort:
-    ; сортування масиву чисел
+    mov cx, word ptr numbersCount
+    dec cx  ; count-1
+outerLoop:
+    push cx
+    lea si, numbersArray
+innerLoop:
+    mov ax, [si]
+    cmp ax, [si+2]
+    jl nextStep
+    xchg [si+2], ax
+    mov [si], ax
+nextStep:
+    add si, 2
+    loop innerLoop
+    pop cx
+    loop outerLoop
     ret
 
 calculateAverage:
