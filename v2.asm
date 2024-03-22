@@ -1,88 +1,151 @@
 .model small
 .stack 100h
-
 .data
-oneChar db ?
-numbersCount dw 0             
-numbersArray dw 100 dup (0)   ; Масив для збереження чисел
-
+    space db '', '$'
+    buff db 1000 dup(?)
+    numbersArray dw 100 dup(?)
+    numberCount dw ?
+    
 .code
-main:
+start:
     mov ax, @data
     mov ds, ax
 
-    call read_next
-    call print_numbers
+    mov ax, numbersArray
+    call input
+    call output
 
-    mov ah, 4Ch
+    mov ax, 4C00h
     int 21h
 
-read_next:
-    mov ah, 03fh
-    mov bx, 0h 
-    mov cx, 1  
-    mov dx, offset oneChar  
-    int 21h 
+    input proc 
+        startPr:
+            mov ah,0ah
+            xor di,di
+            mov dx, offset buff 
+            int 21h 
+            mov dl,0ah
+            mov ah,02
+            int 21h
+            
+        
+        mov si,offset buff+2 
+        loopBuff:
+            cmp byte ptr [si],"-" 
+            jnz ii1
+            inc si  
+        ii1:
+            xor ax,ax
+            mov bx,10 
+        ii2:
+            mov cl,[si] 
 
-    cmp oneChar, 20h    
-    je saveNumber        
-    cmp oneChar, 0Dh     
-    je saveNumber        
-    cmp oneChar, 0Ah     
-    je saveNumber       
+            cmp cl,0dh  
+            jz endin
+            
+            cmp cl, ' '
+            je newNum
 
-    or ax, ax            
-    jnz read_next       
-    ret
+        
+            sub cl,'0'  
+            mul bx     
+            add ax,cx  
+            inc si     
+            jmp ii2   
 
-saveNumber:
-    mov [numbersArray + si], ax  ; Зберігаємо число у масиві
-    add si, 2                    ; Збільшуємо індекс на 2, оскільки кожне число займає 2 байти (dw)
-    inc numbersCount             ; Збільшуємо лічильник чисел
-    ret
+            xor cl, cl
+            jmp loopBuff
+    
+        newNum:
+            xor cl, cl
+            mov bx, ax
+            inc si
+            mov numbersArray[di], ax
+            add di, 2
+            jmp loopBuff
+    
+        endin:
+            xor cl, cl
+            mov numbersArray[di], ax
+            add di, 2
+            xor ax, ax
+            mov bx, 2
+            mov numberCount, di
+            mov ax, numberCount
+            div bx
+            mov numberCount, ax
+            xor bx, bx
+            ret
+    
+    input endp
 
-print_numbers:
-    mov cx, numbersCount              
-    mov si, offset numbersArray              
+    output proc
+        xor dx, dx
+        xor ax, ax
 
-print_loop:
-    mov ax, [si]                 ; Завантажуємо число з масиву
-    call print_number            ; Виводимо число
-    add si, 2                    ; Збільшуємо індекс на 2, оскільки кожне число займає 2 байти (dw)
-    loop print_loop        
+        xor di, di
+        xor si, si
+        mov si, numberCount
+        stLoop:
+            mov ax, numbersArray[di]
+            
+            call outputNum
+            oi4:
+                add di, 2
+                dec si
+                cmp si, 0
+                jbe exit
+            loop stLoop
 
-    ret
+        exit:
+            ret
+    output endp
 
-print_number:
-    mov dx, ax                   ; Завантажуємо число для виводу
-    mov ah, 09h                  ; Виводимо число
-    int 21h
-    ret
+    outputNum PROC
+        ouput1:  
+                xor bx, bx
+                xor     cx, cx
+                mov     bx, 10 
+            output2:
+                xor     dx,dx
+                div     bx
+                push    dx
+                inc     cx
+                test    ax, ax
+                jnz     output2
+                mov     ah, 02h
+            output3:
+                pop     dx
+                add     dl, '0'
+                int     21h
+                loop    output3
+        ret
+    outputNum ENDP
 
-sort:
-    mov cx, word ptr numbersCount
-    dec cx  ; count-1
-outerLoop:
-    push cx
-    lea si, numbersArray
-innerLoop:
-    mov ax, [si]
-    cmp ax, [si+2]
-    jl nextStep
-    xchg [si+2], ax
-    mov [si], ax
-nextStep:
-    add si, 2
-    loop innerLoop
-    pop cx
-    loop outerLoop
-    ret
+    sort PROC
+        mov cx, word ptr numberCount
+            dec cx 
+            outerLoop:
+                push cx
+                lea si, numbersArray
+            innerLoop:
+                mov ax, [si]
+                cmp ax, [si+2]
+                jl nextStep
+                xchg [si+2], ax
+                mov [si], ax
+            nextStep:
+                add si, 2
+                loop innerLoop
+                pop cx
+                loop outerLoop     
+    sort ENDP
 
-calculateAverage:
-    ; обчислення середнього значення
-    ret
+    median PROC
+            ; розрахунок медіани
+    median ENDP
 
-calculateMedian:
-    ; обчислення медіани
-    ret
-end main 
+    average PROC
+        ; розрахунок середнього арифметичного
+    average ENDP
+end start
